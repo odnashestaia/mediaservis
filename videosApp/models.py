@@ -6,6 +6,7 @@ class Video(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     file = models.FileField(upload_to="videos")
+    preview = models.FileField(upload_to="preview", blank=True)
     duration = models.DurationField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
