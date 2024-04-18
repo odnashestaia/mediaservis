@@ -18,6 +18,10 @@ class Video(models.Model):
     def __str__(self) -> str:
         return self.title
 
+    def total_likes(self):
+        # подсчет лайков
+        return self.likes.count()
+
 
 class Playlist(models.Model):
     title = models.CharField(max_length=200)
