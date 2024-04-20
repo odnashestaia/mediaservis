@@ -1,0 +1,34 @@
+{% extends "base/base.html" %} {% block content %}
+<div class="d-flex justify-content-around">
+	<h1>{{playlist.title}}</h1>
+	<h1>{{playlist.owner}}</h1>
+</div>
+<div class="row">
+	{% for video_item in videos %}
+	<div class="col-lg-4 mb-5">
+			<div class="card" width="100%">
+				<div
+					style="width: 100%; max-height: 300px; background-color: black"
+				>
+					<img
+						src="{{video_item.preview.url}}"
+						alt="а хуй вам"
+						width="100%"
+						height="300px"
+					/>
+				</div>
+				<div class="card-body">
+					<h5 class="card-title">{{video_item.title}}</h5>
+					<p class="card-text">{{video_item.description}}</p>
+					<div class="d-flex justify-content-between">
+						<a href="{% url "video-detail" video_item.pk %}" class="btn btn-primary">Смотреть</a>
+						<a href="{% url "playlist-delete-video" playlist.pk video_item.pk %}" class="btn btn-danger">Удалить из плейлиста</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+</div>
+
+<a href="{% url "playlist-delete" playlist.pk %}" class="btn btn-danger">Удалить плейлист</a>
+{% endblock content %}
