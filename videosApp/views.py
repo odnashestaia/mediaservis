@@ -1,8 +1,10 @@
-import json
-from django.shortcuts import render, HttpResponse, get_list_or_404, redirect
+from django.shortcuts import render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, DeleteView
+from django.views.generic import ListView, DetailView, DeleteView, CreateView
 from .models import Video, Playlist, Category
+# from .form import CreatePlaylistForm
+# from userApp.models import UserApp
 
 
 class VideoListView(ListView):
@@ -30,9 +32,8 @@ def playlist_list(request):
             {
                 "pk": playlist.pk,
                 "title": playlist.title,
-                "description": playlist.description,
                 "created_at": playlist.created_at,
-                "preview": video.preview,
+                "preview": video.preview if playlist.videos.exists() else "#",
             }
         )
     return render(request, "playlist/playlists.html", context)
@@ -55,10 +56,10 @@ class PlaylistDetailView(DetailView):
         return context
 
 
-def delete_video_playlist(request, playlist_pk, pk):
-    playlist_obj = Playlist.objects.get(pk=playlist_pk)  # получаем объект плейлиста
+def delete_video_playlist(request, pk, video_pk):
+    playlist_obj = Playlist.objects.get(pk=pk)  # получаем объект плейлиста
 
-    video_obj = Video.objects.get(pk=pk)  # получаем объект видео
+    video_obj = Video.objects.get(pk=video_pk)  # получаем объект видео
 
     playlist_obj.videos.remove(video_obj)  # удаляем видео из плейлиста
     playlist_obj.save()  # сохраняем изменения в базе данных
@@ -69,3 +70,21 @@ class PlaylistDelete(DeleteView):
     model = Playlist
     success_url = reverse_lazy("playlists")
     template_name = "standardForm\delete.html"
+
+
+class PlaylistCreateView(LoginRequiredMixin, CreateView):
+    model = Playlist
+    fields = ["title", "category"]
+    template_name = "playlist\create_playlist.html"
+    success_url = reverse_lazy("playlists")
+
+    def form_valid(self, form):
+        """при валидации добавляем создателя"""
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """добавляем категории для вывода"""
+        context = super().get_context_data(**kwargs)
+        context["categorys"] = Category.objects.all()
+        return context

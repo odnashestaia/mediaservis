@@ -25,11 +25,10 @@ class Video(models.Model):
 
 class Playlist(models.Model):
     title = models.CharField(max_length=200)
-    description = models.TextField(null=True, blank=True)
     owner = models.ForeignKey(
-        UserApp, on_delete=models.CASCADE, related_name="playlists"
+        UserApp, on_delete=models.CASCADE, related_name="owner_playlists"
     )
-    videos = models.ManyToManyField(Video, related_name="playlists", blank=True)
+    videos = models.ManyToManyField(Video, related_name="videos_playlists", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     category = models.ForeignKey("Category", on_delete=models.CASCADE)
 

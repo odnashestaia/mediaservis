@@ -1,5 +1,9 @@
 {% extends "base/base.html" %} {% block content %}
-<h1>Все плейлисты</h1>
+<div class="d-flex justify-content-between">
+	<h1>Все плейлисты</h1>
+	<a href="{% url "playlist-create" %}"><button type="button" class="btn btn-info">Создать плейлист</button></a>
+</div>
+
 	<div class="row">
 		{% for video in object_list%}
 		<div class="col-lg-4 mb-5">

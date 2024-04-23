@@ -19,7 +19,6 @@
 				</div>
 				<div class="card-body">
 					<h5 class="card-title">{{video_item.title}}</h5>
-					<p class="card-text">{{video_item.description}}</p>
 					<div class="d-flex justify-content-between">
 						<a href="{% url "video-detail" video_item.pk %}" class="btn btn-primary">Смотреть</a>
 						<a href="{% url "playlist-delete-video" playlist.pk video_item.pk %}" class="btn btn-danger">Удалить из плейлиста</a>
