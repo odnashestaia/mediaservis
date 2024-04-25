@@ -7,7 +7,7 @@ from .views import (
     PlaylistDetailView,
     playlist_list,
     delete_video_playlist,
-    # my_view,
+    PlaylistUpdateView,
     PlaylistCreateView,
 )
 
@@ -28,4 +28,7 @@ urlpatterns = [
     ),
     path("playlist/create", PlaylistCreateView.as_view(), name="playlist-create"),
     path("playlist/add", playlist_list, name="playlist-add"),
+    path(
+        "playlist/<int:pk>/update", PlaylistUpdateView.as_view(), name="playlist-update"
+    ),
 ]

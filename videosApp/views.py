@@ -1,10 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, DeleteView, CreateView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    DeleteView,
+    CreateView,
+    UpdateView,
+)
 from .models import Video, Playlist, Category
-# from .form import CreatePlaylistForm
-# from userApp.models import UserApp
+
+
+"""  Videos  """
 
 
 class VideoListView(ListView):
@@ -23,8 +30,11 @@ class VideoDelete(DeleteView):
     template_name = "standardForm\delete.html"
 
 
+"""  playlist  """
+
+
 def playlist_list(request):
-    playlists = Playlist.objects.all()
+    playlists = Playlist.objects.order_by("videos")
     context = {"object_list": []}
     for playlist in playlists:
         video = playlist.videos.first() if playlist.videos.exists() else None
@@ -33,7 +43,7 @@ def playlist_list(request):
                 "pk": playlist.pk,
                 "title": playlist.title,
                 "created_at": playlist.created_at,
-                "preview": video.preview if playlist.videos.exists() else "#",
+                "preview": video.preview if playlist.videos.exists() else "",
             }
         )
     return render(request, "playlist/playlists.html", context)
@@ -88,3 +98,27 @@ class PlaylistCreateView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context["categorys"] = Category.objects.all()
         return context
+
+
+class PlaylistUpdateView(LoginRequiredMixin, UpdateView):
+    model = Playlist
+    fields = ["title", "category"]
+    template_name = "playlist/create_playlist.html"
+    success_url = reverse_lazy("playlists")
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """добавляем категории для вывода"""
+        context = super().get_context_data(**kwargs)
+        playlist = Playlist.objects.get(id=self.object.pk)
+        context["categorys"] = Category.objects.all()
+        context["category_id"] = playlist.category.pk
+        context["title"] = playlist.title
+        print(context)
+        return context
+
+
+class AddVideoUpdateView(LoginRequiredMixin, UpdateView):
+    model = Playlist
+    fields = ["videos"]
+    template_name = "playlist/add_playlist.html"
+    success_url = reverse_lazy("videos")

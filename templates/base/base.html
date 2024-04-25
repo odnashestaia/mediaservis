@@ -5,21 +5,27 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		{% block extension %}{% endblock extension %}
 		<title>{{title}}</title>
+
 		<link
 			rel="stylesheet"
 			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
 		/>
+		<style>
+			body {
+				background-color: #1a1a1a;
+				color: #f1f1f1;
+			}
+			* {
+				background-color: #1a1a1a;
+				color: #f1f1f1;
+			}
+		</style>
+		<script
+			src="https://unpkg.com/htmx.org@1.9.12"
+			integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+			crossorigin="anonymous"
+		></script>
 	</head>
-	<style>
-		body {
-			background-color: #1a1a1a;
-			color: #f1f1f1;
-		}
-		* {
-			background-color: #1a1a1a;
-			color: #f1f1f1;
-		}
-	</style>
 	<body>
 		{% include "base/navbar.html" %}
 

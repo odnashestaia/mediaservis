@@ -1,29 +1,40 @@
 {% extends "base/base.html" %} {% block content %}
 <div class="container">
-    <h1 class="text-dark">Создать плейлист</h1>
+    <h1 class="text-white mb-5">{% if not category_id %}Создать {% else %}Изменить{% endif %} плейлист</h1>
     <form method="post" class=" text-white">
         {% csrf_token %}
         <div class="form-group">
             <label for="id_title" class="text-white">Название:</label>
-            <input type="text" class="form-control bg-dark border-dark text-white" id="id_title" name="title" maxlength="200">
+            <input type="text" id="htmlInput" class="form-control bg-dark border-dark text-white" id="id_title" name="title" maxlength="200">
         </div>
         <div class="form-group">
             <label for="id_category" class="text-white">Категория:</label>
             <select class="form-control bg-dark border-dark text-white" id="id_category" name="category">
                 {% for category in categorys %}
-                    <option value="{{ category.pk }}" {% if category.pk == 1 %}selected{% endif %}>{{ category.name }}</option>
+                    <option value="{{ category.pk }}" 
+                    {% if not category_id %} 
+                        {% if category.pk == 1 %}
+                            selected
+                        {% endif %}
+                    {% else %}
+                        {% if category.pk == category_id %}
+                            selected
+                        {% endif %}
+                    {% endif %}
+                    >{{ category.name }}</option>
                 {% endfor %}
             </select>
         </div>
-        {% comment %} <div class="form-group">
-            <label for="id_category" class="text-white">пользователь:</label>
-            <select class="form-control bg-dark border-dark text-white" id="id_category" name="owner">
-                {% for owner in users %}
-                    <option value="{{ owner.pk }}" {% if owner.pk == 1 %}selected{% endif %}>{{ owner.username }}</option>
-                {% endfor %}
-            </select>
-        </div> {% endcomment %}
-        <button type="submit" class="btn btn-primary">Создать</button>
+        <button type="submit" class="btn btn-primary mt-5 pl-3 pr-3">{% if not category_id %}Создать {% else %}Изменить{% endif %}</button>
     </form>
 </div>
+{% if category_id %}
+    <script>
+        // Получаем ссылку на элемент textarea
+        const htmlTextarea = document.getElementById('htmlInput');
+
+        // Устанавливаем HTML-разметку в textarea
+        htmlTextarea.value = {{title}};
+    </script>
+{% endif %}
 {% endblock content %}
