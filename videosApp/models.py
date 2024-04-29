@@ -12,15 +12,10 @@ class Video(models.Model):
     user = models.ForeignKey(
         UserApp, on_delete=models.CASCADE, related_name="uploaded_videos"
     )
-    likes = models.ManyToManyField(UserApp, related_name="liked_videos", blank=True)
-    views = models.PositiveIntegerField(default=0)
+    category = models.ForeignKey("Category", on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return self.title
-
-    def total_likes(self):
-        # подсчет лайков
-        return self.likes.count()
 
 
 class Playlist(models.Model):

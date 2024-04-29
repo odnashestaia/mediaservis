@@ -28,6 +28,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
 
 # Application definition
 
@@ -41,9 +46,9 @@ INSTALLED_APPS = [
     # приложения
     "userApp.apps.UserappConfig",
     "videosApp.apps.VideosappConfig",
-    "commentsApp.apps.CommentsappConfig",
     # библиотеки
     "django_filters",
+    "debug_toolbar",
     "django_htmx",
 ]
 
@@ -56,6 +61,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "mediaservis.urls"
@@ -85,7 +91,7 @@ WSGI_APPLICATION = "mediaservis.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
+        "NAME": "postgres1",
         "USER": "postgres",
         "PASSWORD": "prop",
         "HOST": "localhost",

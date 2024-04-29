@@ -1,0 +1,59 @@
+{% extends "base/base.html" %} {% block content %}
+<div class="container">
+    <h1 class="text-white mb-5">{% if not category_id %}Создать {% else %}Изменить{% endif %} плейлист</h1>
+    <form method="post" class=" text-white" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_title" class="text-white">Название:</label>
+            <input type="text" id="htmlInput" class="form-control bg-dark border-dark text-white" id="id_title" name="title" maxlength="200">
+        </div>
+        <div class="form-group">
+            <label for="id_title" class="text-white">Описание:</label>
+            <input type="text" id="htmlInput" class="form-control bg-dark border-dark text-white" id="id_title" name="description" maxlength="200">
+        </div>
+        <div class="form-group">
+            <label for="id_title" class="text-white">Превью видео:</label>
+            <input type="file" id="htmlInput" class="form-control bg-dark border-dark text-white" id="id_title" name="preview" maxlength="200">
+        </div>
+        <div class="form-group">
+            <label for="id_title" class="text-white">Видео:</label>
+            <input type="file" id="htmlInput" class="form-control bg-dark border-dark text-white" id="id_title" name="file" maxlength="200">
+        </div>
+        <div class="form-group">
+            <label for="id_title" class="text-white">длительность:</label>
+            <input type="text" id="htmlInput" class="form-control bg-dark border-dark text-white" id="id_title" name="duration" maxlength="200">
+        </div>
+        <div class="form-group">
+            <label for="id_category" class="text-white">Категория:</label>
+            <div class="d-flex">
+                <select class="form-control bg-dark border-dark text-white" id="id_category" name="category">
+                    {% for category in categorys %}
+                        <option value="{{ category.pk }}" 
+                        {% if not category_id %} 
+                            {% if category.pk == 1 %}
+                                selected
+                            {% endif %}
+                        {% else %}
+                            {% if category.pk == category_id %}
+                                selected
+                            {% endif %}
+                        {% endif %}
+                        >{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                <a href="{% url "category-create" %}"><button type="button" class="btn btn-info">Добавить</button></a>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-5 pl-3 pr-3">{% if not category_id %}Создать {% else %}Изменить{% endif %}</button>
+    </form>
+</div>
+{% if category_id %}
+    <script>
+        // Получаем ссылку на элемент textarea
+        const htmlTextarea = document.getElementById('htmlInput');
+
+        // Устанавливаем HTML-разметку в textarea
+        htmlTextarea.value = {{title}};
+    </script>
+{% endif %}
+{% endblock content %}

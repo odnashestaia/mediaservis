@@ -1,0 +1,25 @@
+{% extends "base/base.html" %} {% block content %}
+<div class="container">
+	<h1 class="text-white mb-5">
+		{% if not category_id %}Создать {% else %}Изменить{% endif %} категорию
+	</h1>
+	<form method="post" class="text-white">
+		{% csrf_token %}
+		<div class="mb-3">
+			<label for="exampleInputEmail1" class="form-label">Имя</label>
+			<input
+				type="text"
+				id="disabledTextInput"
+				name="name"
+				class="form-control bg-dark border-dark text-white"
+				placeholder="Disabled input"
+			/>
+		</div>
+		{% if form.errors %} {% for field, errors in form.errors.items %} {{ errors}} {% endfor %} {% endif %}
+		<button type="submit" class="btn btn-primary mt-5 pl-3 pr-3">
+			{% if not category_id %}Создать {% else %}Изменить{% endif %}
+		</button>
+	</form>
+</div>
+
+{% endblock content %}

@@ -1,8 +1,12 @@
 {% extends "base/base.html" %} {% block content %}
-<h1>Все видео</h1>
-	<div class="row">
+<div class="d-flex justify-content-between align-items-center mb-5">
+	<h1>Все плейлисты</h1>
+	<a class="" href="{% url "playlist-create" %}"><button type="button" class="btn btn-info">Создать плейлист</button></a>
+</div>
+
+	<div class="row mb-5">
 		{% for video in object_list%}
-		<div class="col-lg-4 mb-5">
+		<div class="col-lg-4 ">
 			<div class="card" width="100%">
 				<div
 					style="width: 100%; max-height: 300px; background-color: black"
@@ -17,7 +21,7 @@
 				<div class="card-body">
 					<h5 class="card-title">{{video.title}}</h5>
 					<p class="card-text">{{video.description}}</p>
-					<a href="{% url "video-detail" video.pk %}" class="btn btn-primary">Смотреть</a>
+					<a href="{% url "playlist-detail" video.pk %}" class="btn btn-primary">Смотреть</a>
 				</div>
 			</div>
 		</div>

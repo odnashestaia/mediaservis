@@ -1,0 +1,13 @@
+{% block add_video %}
+
+<form method="post" class="d-flex" hx-post="{% url "playlist-add-video" video.pk %}">
+	{% csrf_token %}
+	<select name="playlist" class="form-select" aria-label="Default select example">
+		{% for playlist in playlist_list %}
+		<option selected value="{{playlist.pk}}">{{playlist.title}}</option>
+		{% endfor %}
+	</select>
+	<button type="submit" class="btn btn-success">Добавить</button>
+</form>
+
+{% endblock add_video %}

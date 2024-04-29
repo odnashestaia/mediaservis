@@ -9,21 +9,24 @@
         </div>
         <div class="form-group">
             <label for="id_category" class="text-white">Категория:</label>
-            <select class="form-control bg-dark border-dark text-white" id="id_category" name="category">
-                {% for category in categorys %}
-                    <option value="{{ category.pk }}" 
-                    {% if not category_id %} 
-                        {% if category.pk == 1 %}
-                            selected
+            <div class="d-flex">
+                <select class="form-control bg-dark border-dark text-white" id="id_category" name="category">
+                    {% for category in categorys %}
+                        <option value="{{ category.pk }}" 
+                        {% if not category_id %} 
+                            {% if category.pk == 1 %}
+                                selected
+                            {% endif %}
+                        {% else %}
+                            {% if category.pk == category_id %}
+                                selected
+                            {% endif %}
                         {% endif %}
-                    {% else %}
-                        {% if category.pk == category_id %}
-                            selected
-                        {% endif %}
-                    {% endif %}
-                    >{{ category.name }}</option>
-                {% endfor %}
-            </select>
+                        >{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                <a href="{% url "category-create" %}"><button type="button" class="btn btn-info">Добавить</button></a>
+            </div>
         </div>
         <button type="submit" class="btn btn-primary mt-5 pl-3 pr-3">{% if not category_id %}Создать {% else %}Изменить{% endif %}</button>
     </form>

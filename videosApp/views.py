@@ -1,6 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
+from django.views.decorators.http import require_http_methods
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
+from django_htmx.http import HttpResponseClientRefresh
 from django.views.generic import (
     ListView,
     DetailView,
@@ -14,27 +17,46 @@ from .models import Video, Playlist, Category
 """  Videos  """
 
 
-class VideoListView(ListView):
-    template_name = "videos/videos.html"
+class VideoListView(LoginRequiredMixin, ListView):
+    template_name = "videos/list.html"
     model = Video
 
 
-class VideoDetailView(DetailView):
-    template_name = "videos/video_detail.html"
+class VideoDetailView(LoginRequiredMixin, DetailView):
+    template_name = "videos/detail.html"
     model = Video
 
 
-class VideoDelete(DeleteView):
+class VideoDelete(LoginRequiredMixin, DeleteView):
     model = Video
     success_url = reverse_lazy("videos")
     template_name = "standardForm\delete.html"
 
 
+class VideoCreate(LoginRequiredMixin, CreateView):
+    model = Video
+    fields = ["title", "category", "description", "preview", "duration", "file"]
+    template_name = "videos/add.html"
+    success_url = reverse_lazy("videos")
+
+    def form_valid(self, form):
+        """при валидации добавляем создателя"""
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """добавляем категории для вывода"""
+        context = super().get_context_data(**kwargs)
+        context["categorys"] = Category.objects.all()
+        return context
+
+
 """  playlist  """
 
 
+@login_required
 def playlist_list(request):
-    playlists = Playlist.objects.order_by("videos")
+    playlists = Playlist.objects.all()
     context = {"object_list": []}
     for playlist in playlists:
         video = playlist.videos.first() if playlist.videos.exists() else None
@@ -46,12 +68,12 @@ def playlist_list(request):
                 "preview": video.preview if playlist.videos.exists() else "",
             }
         )
-    return render(request, "playlist/playlists.html", context)
+    return render(request, "playlist/list.html", context)
 
 
-class PlaylistDetailView(DetailView):
+class PlaylistDetailView(LoginRequiredMixin, DetailView):
     model = Playlist
-    template_name = "playlist/playlist_detail.html"
+    template_name = "playlist/detail.html"
 
     def get_object(self):
         pk = self.kwargs.get("pk")
@@ -66,6 +88,7 @@ class PlaylistDetailView(DetailView):
         return context
 
 
+@login_required
 def delete_video_playlist(request, pk, video_pk):
     playlist_obj = Playlist.objects.get(pk=pk)  # получаем объект плейлиста
 
@@ -73,10 +96,10 @@ def delete_video_playlist(request, pk, video_pk):
 
     playlist_obj.videos.remove(video_obj)  # удаляем видео из плейлиста
     playlist_obj.save()  # сохраняем изменения в базе данных
-    return redirect(reverse_lazy("playlist_list"))
+    return redirect(reverse_lazy("playlists"))
 
 
-class PlaylistDelete(DeleteView):
+class PlaylistDelete(LoginRequiredMixin, DeleteView):
     model = Playlist
     success_url = reverse_lazy("playlists")
     template_name = "standardForm\delete.html"
@@ -85,7 +108,7 @@ class PlaylistDelete(DeleteView):
 class PlaylistCreateView(LoginRequiredMixin, CreateView):
     model = Playlist
     fields = ["title", "category"]
-    template_name = "playlist\create_playlist.html"
+    template_name = "playlist\create.html"
     success_url = reverse_lazy("playlists")
 
     def form_valid(self, form):
@@ -103,7 +126,7 @@ class PlaylistCreateView(LoginRequiredMixin, CreateView):
 class PlaylistUpdateView(LoginRequiredMixin, UpdateView):
     model = Playlist
     fields = ["title", "category"]
-    template_name = "playlist/create_playlist.html"
+    template_name = "playlist/create.html"
     success_url = reverse_lazy("playlists")
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -117,8 +140,36 @@ class PlaylistUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 
-class AddVideoUpdateView(LoginRequiredMixin, UpdateView):
-    model = Playlist
-    fields = ["videos"]
-    template_name = "playlist/add_playlist.html"
-    success_url = reverse_lazy("videos")
+@login_required
+@require_http_methods(["GET", "POST"])
+def add_video_playlist(request, pk):
+    if request.method == "POST":
+        video = get_object_or_404(Video, pk=pk)
+        playlist = get_object_or_404(Playlist, pk=request.POST.get("playlist"))
+        playlist.videos.add(video)
+        return HttpResponseClientRefresh()
+    else:
+        playlist_list = Playlist.objects.filter(owner=request.user.pk)
+        video = get_object_or_404(Video, pk=pk)
+        return render(
+            request,
+            "playlist/add_video.html",
+            {"playlist_list": playlist_list, "video": video},
+        )
+
+
+""" категории """
+
+
+class CategoryCreateView(LoginRequiredMixin, CreateView):
+    model = Category
+    fields = ["name"]
+    template_name = "standardForm/add_category.html"
+    success_url = reverse_lazy("playlists")
+
+    def form_valid(self, form):
+        if not Category.objects.filter(name=form.instance.name):
+            return super().form_valid(form)
+        else:
+            form.add_error(None, "Уже существует")
+            return self.render_to_response(self.get_context_data(form=form))
