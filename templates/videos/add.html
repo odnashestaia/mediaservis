@@ -14,10 +14,12 @@
         <div class="form-group">
             <label for="id_title" class="text-white">Превью видео:</label>
             <input type="file" id="htmlInput" class="form-control bg-dark border-dark text-white" id="id_title" name="preview" maxlength="200">
+            {% if form.errors and 'preview' in form.errors.items.field%} {% for field, errors in form.errors.items %}{{errors}}  {% endfor %} {% endif %}
         </div>
         <div class="form-group">
             <label for="id_title" class="text-white">Видео:</label>
             <input type="file" id="htmlInput" class="form-control bg-dark border-dark text-white" id="id_title" name="file" maxlength="200">
+            {% if form.errors and 'file' in form.errors.items.field %} {% for field, errors in form.errors.items %} {{errors}} {% endfor %} {% endif %}
         </div>
         <div class="form-group">
             <label for="id_title" class="text-white">длительность:</label>

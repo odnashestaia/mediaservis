@@ -1,5 +1,5 @@
 from django.db import models
-from userApp.models import UserApp
+from django.contrib.auth.models import User
 
 
 class Video(models.Model):
@@ -10,7 +10,7 @@ class Video(models.Model):
     duration = models.DurationField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
-        UserApp, on_delete=models.CASCADE, related_name="uploaded_videos"
+        User, on_delete=models.CASCADE, related_name="uploaded_videos"
     )
     category = models.ForeignKey("Category", on_delete=models.CASCADE)
 
@@ -21,7 +21,7 @@ class Video(models.Model):
 class Playlist(models.Model):
     title = models.CharField(max_length=200)
     owner = models.ForeignKey(
-        UserApp, on_delete=models.CASCADE, related_name="owner_playlists"
+        User, on_delete=models.CASCADE, related_name="owner_playlists"
     )
     videos = models.ManyToManyField(Video, related_name="videos_playlists", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

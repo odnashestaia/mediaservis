@@ -35,24 +35,13 @@
 						aria-haspopup="true"
 						aria-expanded="false"
 					>
-						{% if user.profile.avatar %}
-						<img
-							src="{{ user.profile.avatar.url }}"
-							alt="{{ user.username }}"
-							class="rounded-circle"
-							width="30"
-							height="30"
-						/>
-						{% else %}
-						<i class="fas fa-user-circle"></i>
-						{% endif %} {{ user.username }}
+					{{ user.username }}
 					</a>
 					<div
 						class="dropdown-menu dropdown-menu-right"
 						aria-labelledby="navbarDropdown"
 					>
-						<a class="dropdown-item" href={% url "videos" %}>Profile</a>
-						<a class="dropdown-item" href={% url "videos" %}>Logout</a>
+						<a class="dropdown-item" href={% url "logout" %}>Logout</a>
 					</div>
 				</li>
 			</ul>

@@ -3,6 +3,20 @@
 	<h1>Все видео</h1>
 	<a class="" href="{% url "video-add" %}"><button type="button" class="btn btn-info">Добавить видео</button></a>
 </div>
+<form method="get" class="mt-5">
+	<label for="id_category" class="text-white">Категория:</label>
+            <div class="d-flex">
+                <select class="form-control bg-dark border-dark text-white" id="id_category" name="category">
+                    {% for category in categorys %}
+                        <option value="{{ category.name }}" 
+                            {% if category.pk == 1 %}
+                                selected
+                            {% endif %}
+                        >{{ category.name }}</option>
+                    {% endfor %}
+                </select><button type="submit" class="btn btn-info">Filter</button>
+            </div>
+</form>
 	<div class="row">
 		{% for video in object_list%}
 		<div class="col-lg-4 mb-5">

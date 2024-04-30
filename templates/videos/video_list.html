@@ -1,0 +1,28 @@
+{% block video_list %}
+<div class="row">
+	{% for video in object_list%}
+	<div class="col-lg-4 mb-5">
+		<div class="card" width="100%">
+			<div
+				style="width: 100%; max-height: 300px; background-color: black"
+			>
+				<img
+					src="{{video.preview.url}}"
+					alt="а хуй вам"
+					width="100%"
+					height="300px"
+				/>
+			</div>
+			<div class="card-body">
+				<h5 class="card-title">{{video.title}}</h5>
+				<p class="card-text">{{video.description}}</p>
+				<div class="d-flex justify-content-between">
+				<a href="{% url "video-detail" video.pk %}" class="btn btn-primary">Смотреть</a>
+				{% include "playlist/add_videos_button.html" %}
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+{% endblock video_list %}

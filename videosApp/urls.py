@@ -10,7 +10,7 @@ from .views import (
     add_video_playlist,
 )
 
-from .views import VideoDetailView, VideoListView, VideoDelete, VideoCreate
+from .views import VideoDetailView, VideoListView, VideoDelete, VideoCreate, video_list
 
 from .views import (
     CategoryCreateView,
@@ -24,6 +24,7 @@ video = [
     path("video/<int:pk>", VideoDetailView.as_view(), name="video-detail"),
     path("video/<int:pk>/delete", VideoDelete.as_view(), name="video-delete"),
     path("video/add", VideoCreate.as_view(), name="video-add"),
+    path("video/test", video_list, name="video-test"),
 ]
 
 playlist = [

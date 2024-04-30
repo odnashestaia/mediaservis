@@ -1,7 +1,9 @@
+import os
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy
 from django_htmx.http import HttpResponseClientRefresh
 from django.views.generic import (
@@ -12,6 +14,32 @@ from django.views.generic import (
     UpdateView,
 )
 from .models import Video, Playlist, Category
+from .filters import PlaylistFilter, VideoFilter
+
+# Расширения для видео
+VIDEO_EXTENSIONS = [
+    ".mp4",
+    ".avi",
+    ".mov",
+    ".mkv",
+    ".flv",
+    ".wmv",
+    ".webm",
+    ".m4v",
+    ".3gp",
+    ".ogv",
+]
+
+# Расширения для картинок
+IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".heic", ".heif"]
+
+
+def validate_file(file, allowed_extensions):
+    _, file_extension = os.path.splitext(file.name)
+    file_extension = file_extension.lower()
+    if file_extension not in allowed_extensions:
+        return False
+    return True
 
 
 """  Videos  """
@@ -20,6 +48,16 @@ from .models import Video, Playlist, Category
 class VideoListView(LoginRequiredMixin, ListView):
     template_name = "videos/list.html"
     model = Video
+
+    def get_queryset(self):
+        filter = VideoFilter(self.request.GET, queryset=Video.objects.all())
+        return filter.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["filter"] = VideoFilter(self.request.GET, queryset=Video.objects.all())
+        context["categorys"] = Category.objects.all()
+        return context
 
 
 class VideoDetailView(LoginRequiredMixin, DetailView):
@@ -42,7 +80,25 @@ class VideoCreate(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         """при валидации добавляем создателя"""
         form.instance.user = self.request.user
-        return super().form_valid(form)
+
+        video_file = form.cleaned_data.get("file")
+        image_file = form.cleaned_data.get("preview")
+
+        if validate_file(image_file, IMAGE_EXTENSIONS) and validate_file(
+            video_file, VIDEO_EXTENSIONS
+        ):
+            return super().form_valid(form)
+
+        else:
+            if not validate_file(image_file, IMAGE_EXTENSIONS):
+                print("Неверное расширение файла : preview")
+                form.add_error("preview", "Неверное расширение файла")
+            if not validate_file(video_file, VIDEO_EXTENSIONS):
+                print("Неверное расширение файла : file")
+                form.add_error("file", "Неверное расширение файла")
+
+            # Возвращаем ответ с ошибками
+            return self.render_to_response(self.get_context_data(form=form))
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """добавляем категории для вывода"""
@@ -51,13 +107,47 @@ class VideoCreate(LoginRequiredMixin, CreateView):
         return context
 
 
+def video_list(request):
+    filter = VideoFilter(request.GET, queryset=Video.objects.all())
+    videos = filter.qs
+
+    context = {
+        "videos": videos,
+        "filter": filter,
+    }
+
+    return render(request, "videos/video_list.html", context)
+
+
 """  playlist  """
+
+
+class PlaylistUpdateView(LoginRequiredMixin, UpdateView):
+    model = Playlist
+    fields = ["title", "category", "description", "preview", "duration", "file"]
+    template_name = "videos/create.html"
+    success_url = reverse_lazy("playlists")
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        playlist = Playlist.objects.get(id=self.object.pk)
+        context["categorys"] = Category.objects.all()
+        context["category_id"] = playlist.category.pk
+        context["title"] = playlist.title
+        print(context)
+        return context
 
 
 @login_required
 def playlist_list(request):
-    playlists = Playlist.objects.all()
-    context = {"object_list": []}
+    filter = PlaylistFilter(request.GET, queryset=Playlist.objects.all())
+    playlists = filter.qs
+
+    context = {
+        "object_list": [],
+        "filter": filter,
+    }
+
     for playlist in playlists:
         video = playlist.videos.first() if playlist.videos.exists() else None
         context["object_list"].append(
@@ -68,6 +158,7 @@ def playlist_list(request):
                 "preview": video.preview if playlist.videos.exists() else "",
             }
         )
+    context["categorys"] = Category.objects.all()
     return render(request, "playlist/list.html", context)
 
 
