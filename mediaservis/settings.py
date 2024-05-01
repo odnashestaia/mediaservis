@@ -12,19 +12,21 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv, dotenv_values
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+config = dotenv_values(".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-38$%(%a)i@p=+%7&-&@)-5!!jxrsjy!5^0qry_9#ki_@04x025"  #
-
+SECRET_KEY = config["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  #
+DEBUG = config["DEBUG"]
 
 ALLOWED_HOSTS = []
 
@@ -90,11 +92,11 @@ WSGI_APPLICATION = "mediaservis.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres1",
-        "USER": "postgres",
-        "PASSWORD": "prop",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": config["NAME_DB"],
+        "USER": config["USER_DB"],
+        "PASSWORD": config["PASSWORD_DB"],
+        "HOST": config["HOST_DB"],
+        "PORT": config["PORT_DB"],
     }
 }
 
