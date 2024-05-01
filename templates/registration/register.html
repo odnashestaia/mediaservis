@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %} {% block content %}
 <div class="container mt-5 text-white">
-	<h1 class="text-center mb-5">Вход</h1>
+	<h1 class="text-center mb-5">Регистрация</h1>
 	<form method="post">
 		{% csrf_token %}
 		<div class="form-group">
@@ -19,17 +19,27 @@
 				type="password"
 				class="form-control bg-secondary text-white"
 				id="password1"
-				name="password"
+				name="password1"
+				required
+			/>
+		</div>
+		<div class="form-group">
+			<label for="password2">Потверждение пароля:</label>
+			<input
+				type="password"
+				class="form-control bg-secondary text-white"
+				id="password2"
+				name="password2"
 				required
 			/>
 		</div>
 		<div class="d-flex justify-content-between">
 			<button type="submit" class="btn btn-primary bg-secondary text-white">
-				Войти
+				Регистрация
 			</button>
-			<a href="{% url "register" %}">
+			<a href="{% url "login" %}">
 				<button type="button" class="btn btn-primary bg-secondary text-white">
-					Регистрация
+					Войти
 				</button>
 			</a>
 		</div>

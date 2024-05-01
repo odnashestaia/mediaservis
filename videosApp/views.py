@@ -1,9 +1,10 @@
 import os
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django_htmx.http import HttpResponseClientRefresh
 from django.views.generic import (
@@ -40,6 +41,21 @@ def validate_file(file, allowed_extensions):
     if file_extension not in allowed_extensions:
         return False
     return True
+
+
+def register(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get("username")
+            raw_password = form.cleaned_data.get("password1")
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect("videos")
+    else:
+        form = UserCreationForm()
+    return render(request, "registration/register.html", {"form": form})
 
 
 """  Videos  """
