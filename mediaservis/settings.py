@@ -28,7 +28,7 @@ SECRET_KEY = config["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config["DEBUG"]
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost"]
 
 INTERNAL_IPS = [
     # ...
@@ -92,11 +92,11 @@ WSGI_APPLICATION = "mediaservis.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": config["NAME_DB"],
-        "USER": config["USER_DB"],
-        "PASSWORD": config["PASSWORD_DB"],
-        "HOST": config["HOST_DB"],
-        "PORT": config["PORT_DB"],
+        "NAME": config["POSTGRES_NAME"],
+        "USER": config["POSTGRES_USER"],
+        "PASSWORD": config["POSTGRES_PASSWORD"],
+        "HOST": config["POSTGRES_HOST"],
+        "PORT": config["POSTGRES_PORT"],
     }
 }
 

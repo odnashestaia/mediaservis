@@ -84,7 +84,7 @@ class VideoDetailView(LoginRequiredMixin, DetailView):
 class VideoDelete(LoginRequiredMixin, DeleteView):
     model = Video
     success_url = reverse_lazy("videos")
-    template_name = "standardForm\delete.html"
+    template_name = "standardForm/delete.html"
 
 
 class VideoCreate(LoginRequiredMixin, CreateView):
@@ -209,13 +209,13 @@ def delete_video_playlist(request, pk, video_pk):
 class PlaylistDelete(LoginRequiredMixin, DeleteView):
     model = Playlist
     success_url = reverse_lazy("playlists")
-    template_name = "standardForm\delete.html"
+    template_name = "standardForm/delete.html"
 
 
 class PlaylistCreateView(LoginRequiredMixin, CreateView):
     model = Playlist
     fields = ["title", "category"]
-    template_name = "playlist\create.html"
+    template_name = "playlist/create.html"
     success_url = reverse_lazy("playlists")
 
     def form_valid(self, form):

@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  ms_postgres:
+    image: postgres:16
+    restart: always
+    container_name: ms_postgres
+    # user: postgres
+    # volumes:
+    #   - D:/python/mediaservis_pg_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-q'] # тест на подключение
+  mediaservis:
+    # вариант где сначало билдиться и создаеться образ потом уже идет дальнейдая настройка
+    build:
+      dockerfile: Dockerfile
+      context: .
+    # image: mediaservis:latest # Вариант если образ будет сбалден до
+    container_name: mediaservis
+    depends_on:
+      ms_postgres:
+        condition: service_healthy # яростно проверяем когда база будет работать
+    volumes:
+      - static_volume:/mediaservis/static
+      - media_volume:/mediaservis/media
+    env_file:
+      - .env
+    command: bash -c "./manage.py migrate &&  ./manage.py collectstatic --noinput && gunicorn -b 0.0.0.0:8000 mediaservis.wsgi:application"
+  nginx:
+    build:
+      dockerfile: ./Dockerfile
+      context: ./docker/nginx/
+    container_name: ms_nginx
+    image: ms_nginx
+    volumes:
+      - static_volume:/mediaservis/static
+      - media_volume:/mediaservis/media
+    depends_on:
+      - mediaservis
+    ports:
+      - '${NGINX_EXTERNAL_PORT}:80'
+
+volumes:
+  static_volume:
+  media_volume:
