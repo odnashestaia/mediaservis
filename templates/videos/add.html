@@ -1,6 +1,6 @@
 {% extends "base/base.html" %} {% block content %}
 <div class="container">
-    <h1 class="text-white mb-5">{% if not category_id %}Создать {% else %}Изменить{% endif %} плейлист</h1>
+    <h1 class="text-white mb-5">{% if not category_id %}Создать {% else %}Изменить{% endif %} видео</h1>
     <form method="post" class=" text-white" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">

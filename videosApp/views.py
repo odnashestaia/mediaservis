@@ -1,21 +1,23 @@
 import os
-from django.shortcuts import get_object_or_404, render, redirect
-from django.views.decorators.http import require_http_methods
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.mixins import LoginRequiredMixin
+
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django_htmx.http import HttpResponseClientRefresh
+from django.views.decorators.http import require_http_methods
 from django.views.generic import (
-    ListView,
-    DetailView,
-    DeleteView,
     CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
     UpdateView,
 )
-from .models import Video, Playlist, Category
+from django_htmx.http import HttpResponseClientRefresh
+
 from .filters import PlaylistFilter, VideoFilter
+from .models import Category, Playlist, Video
 
 # Расширения для видео
 VIDEO_EXTENSIONS = [

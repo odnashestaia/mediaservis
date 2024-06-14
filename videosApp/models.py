@@ -1,8 +1,9 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 
 
 class Video(models.Model):
+    # создание модели videos
     title = models.CharField(max_length=200)
     description = models.TextField()
     file = models.FileField(upload_to="videos")
@@ -19,6 +20,7 @@ class Video(models.Model):
 
 
 class Playlist(models.Model):
+    # Создание модели Playlist
     title = models.CharField(max_length=200)
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="owner_playlists"
@@ -32,6 +34,7 @@ class Playlist(models.Model):
 
 
 class Category(models.Model):
+    # Создание модели Category
     name = models.CharField(max_length=50)
 
     def __str__(self) -> str:
